@@ -10,3 +10,7 @@ Things I need to do to make this happen:
 - That type of field where the user types a search term in a box to go down a list
 - Implement a leaderboard, user interaction with the leaderboard
 - Figure out how much of this can be done on Render+Flask (presumably I can have a little database? and presumably Flask has some way for me to run a thing repeatedly)
+
+So I guess I'll just sort of go thru the flask tutorial but do it the way i think makes most sense?
+
+TODO write test to check that I correctly started the episode db

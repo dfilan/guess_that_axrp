@@ -4,6 +4,7 @@ version = "1.0.0"
 description = "Everyone's favourite AXRP guessing game"
 dependencies = [
     "flask",
+    "requests",
 ]
 
 [build-system]
