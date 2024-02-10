@@ -1,0 +1,11 @@
+[project]
+name = "guess_that_axrp"
+version = "1.0.0"
+description = "Everyone's favourite AXRP guessing game"
+dependencies = [
+    "flask",
+]
+
+[build-system]
+requires = ["flit_core<4"]
+build-backend = "flit_core.buildapi"
