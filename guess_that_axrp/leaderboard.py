@@ -1,3 +1,5 @@
+import datetime as dt
+
 from flask import (
     Blueprint, redirect, render_template, request, session, url_for,
 )
@@ -5,6 +7,13 @@ from flask import (
 from guess_that_axrp.db import get_db
 
 bp = Blueprint('leaderboard', __name__, url_prefix='/leaderboard')
+
+
+def round_time_to_second(obj: dt.datetime) -> dt.datetime:
+    if obj.microsecond >= 500_000:
+        obj += dt.timedelta(seconds=1)
+    return obj.replace(microsecond=0)
+
 
 @bp.route('/')
 def index():
@@ -28,7 +37,7 @@ def index():
             'successes': row['successes'],
             'attempts': row['attempts'],
             'laplace_estimator': round(row['laplace_estimator'], 3),
-            'submitted': row['submitted']
+            'submitted': round_time_to_second(row['submitted'])
         } for row in leaderboard
     ]
     return render_template('leaderboard/index.html', leaderboard=filtered_leaderboard)
