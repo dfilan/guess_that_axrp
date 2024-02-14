@@ -8,7 +8,6 @@ Things that still need to be done:
   - Auto-update the DB
   - Show URL of episode
   - That type of field where the user types a search term in a box to go down a list
-  - Run on Render
   - Test I've correctly started the episode db
   - Button to reset session
   - Get right answer not stored in user cookies
