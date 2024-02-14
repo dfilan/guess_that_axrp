@@ -27,3 +27,4 @@ Things that still need to be done (bolded things will teach me stuff):
     - [bestmotherfucking.website](https://bestmotherfucking.website/)
   - **Deal with people visiting leaderboard.submit or guess.result without playing**
   - Store sentences in database rather than making them whenever someone wants another guess
+  - Deal with key errors without breaking the user experience.
