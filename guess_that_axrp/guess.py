@@ -30,7 +30,9 @@ def pick_random_sentence(text):
     # ok fuck quotations
     sep_period = nice_split(lines, '.')
     sep_bang = nice_split(sep_period, '?')
-    random_markdown = "> " + random.choice(sep_bang)
+    # now filter to sentences that are at least 5 words long
+    long_sentences = list(filter(lambda sentence: len(sentence.split()) >= 5, sep_bang))
+    random_markdown = "> " + random.choice(long_sentences)
     return markdown.markdown(random_markdown)
 
 

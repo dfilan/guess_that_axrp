@@ -13,4 +13,4 @@ Things that still need to be done:
   - Button to reset session
   - Get right answer not stored in user cookies
   - Reset session when you submit your score (so you can't submit multiple times)
-  - Only include sentences of at least 5 words
+    - or otherwise do something so you can't submit multiple times
