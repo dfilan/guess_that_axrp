@@ -16,7 +16,7 @@ def index():
     leaderboard = db.execute(
         'SELECT * FROM (SELECT RANK() OVER(ORDER BY laplace_estimator DESC) as rank, user, '
         'uuid, successes, attempts, laplace_estimator, submitted FROM scores) '
-        'WHERE rank <= 3 OR uuid = ?',
+        'WHERE rank <= 20 OR uuid = ?',
         (my_uuid,)
     ).fetchall()
     # leaderboard = everything[:20]
