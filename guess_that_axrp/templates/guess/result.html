@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block header %}
+<h1>{% block title %}Result{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+<p>The sentence was: "{{ session['sentence'] }}"</p>
+<p>You guessed it came from {{ user_guess }}.</p>
+<p>It actually came from {{ session['episode_name'] }}.</p>
+<p>You've gotten {{ session["correct_guesses"] }} {% if session["correct_guesses"] == 1 %}guess{% else %}guesses{% endif %} correct, out of {{ session["total_guesses"] }} total.</p>
+<p><a href="{{ url_for('guess.index') }}">Try another sentence</a></p>
+<p><a href="{{ url_for('leaderboard.submit') }}">Add your score to the leaderboard</a></p> <!-- TODO update this once I've made the leaderboard? -->
+{% endblock %}
+

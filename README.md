@@ -14,3 +14,13 @@ Things I need to do to make this happen:
 So I guess I'll just sort of go thru the flask tutorial but do it the way i think makes most sense?
 
 TODO write test to check that I correctly started the episode db
+
+TODO make sure episode db includes links to episodes so that I can link them the episode when it's revealed to them.
+
+TODO have button that resets your info - maybe this is done by having 'POST' stuff?
+
+OK: this should be running at some minimum viable level now.
+
+TODO: it would be nice if the right answer weren't stored in user cookies
+
+TODO: make it so that people can't just refresh and get the answer right repeatedly

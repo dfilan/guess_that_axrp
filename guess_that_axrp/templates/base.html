@@ -1,0 +1,17 @@
+<!doctype html>
+<title>{% block title %}{% endblock %} - Guess That AXRP!</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<nav>
+  <h1>Guess That AXRP!</h1>
+  <ul>
+    <li><a href="{{ url_for('leaderboard.index') }}">Leaderboard</a></li> <!-- TODO update this once I've made the leaderboard -->
+    <li><a href="https://axrp.net">AXRP Home Page</a></li>
+  </ul>
+</nav>
+<section class="content">
+  <header>{% block header %}{% endblock %}</header>
+  {% for message in get_flashed_messages() %}
+  <div class="flash">{{ message }}</div>
+  {% endfor %}
+  {% block content %}{% endblock %}
+</section>

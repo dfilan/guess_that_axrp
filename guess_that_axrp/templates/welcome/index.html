@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block header %}
+<h1>{% block title %}Welcome{% endblock %}</h1>
+{% if 'playing' in session and session['playing'] %}
+<a class="action" href="{{ url_for('guess.index') }}">Return to game</a>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<p>Note: this website is being tested, and major changes may occur at any time.</p>
+<p>Welcome to Guess That AXRP! In this game, you will be given random sentences from random episodes of AXRP, and you will have to guess which episode each sentence came from. Once you're done playing, you'll also be able to submit your score to the leaderboard. Good luck!</p>
+<p><a href="{{ url_for('guess.index') }}">Begin playing</a></p>
+{% endblock %}

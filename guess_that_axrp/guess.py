@@ -1,13 +1,10 @@
-import functools
 import random
 
-from flask import (
-    Blueprint, flash, g, redirect, render_template, request, session, url_for
-)
+from flask import Blueprint, render_template, request, session
 
 from guess_that_axrp.db import get_db
 
-bp = Blueprint('guess', __name__)
+bp = Blueprint('guess', __name__, url_prefix='/guess')
 
 
 def pick_random_sentence(text):
@@ -48,19 +45,36 @@ def nice_split(text_list: list[str], split_char: str) -> list[str]:
 # actually maybe I could have one page for entering the game and one page for guesses,
 # and that page can fork on "have I had a previous guess or not"
 
+# oh: one page for submitting your guess, and one page for seeing whether or not you got
+# it right.
 
-@bp.route('/')
+
+@bp.route('/', methods=('GET', 'POST'))
 def index():
-    db = get_db()
-    eps = db.execute('SELECT title, contents FROM episodes').fetchall()
-    random_ep = random.choice(eps)
-    ep_name = random_ep[0]
-    ep_sentence = pick_random_sentence(random_ep[1])
-    all_titles = list(map(lambda tc_tup: tc_tup[0], eps))
-    # hmmm, it's dangerous to send the user the episode name in the html/javascript.
-    # maybe I can add it to g?
-    g.next_episode_name = ep_name
-    # also need to have a list of all the titles to select from
-    return render_template(
-        'guess/index.html', ep_sentence=ep_sentence, all_titles=all_titles,
-    )
+    if request.method == 'POST':
+        user_guess = request.form['user_guess']
+        guess_correct = 1 if user_guess == session['episode_name'] else 0
+        # add error if somehow you're not yet playing?
+        session['total_guesses'] += 1
+        session['correct_guesses'] += guess_correct
+        return render_template('guess/result.html', user_guess=user_guess)
+
+    else:
+        if not 'playing' in session or not session['playing']:
+            session['playing'] = True
+            session['total_guesses'] = 0
+            session['correct_guesses'] = 0
+            db = get_db()
+            eps = db.execute('SELECT id, title FROM episodes').fetchall()
+            names_and_ids = [(ep['title'], ep['id']) for ep in eps]
+            names_and_ids.sort(key=lambda x: x[1])
+            session['ep_names'] = [ep[0] for ep in names_and_ids]
+        random_ep_name = random.choice(session['ep_names'])
+        db = get_db()
+        contents = db.execute(
+            'SELECT contents FROM episodes WHERE title = ?', (random_ep_name,)
+        ).fetchone()
+        ep_sentence = pick_random_sentence(contents['contents'])
+        session['episode_name'] = random_ep_name
+        session['sentence'] = ep_sentence
+        return render_template('guess/index.html')

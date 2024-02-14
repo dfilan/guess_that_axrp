@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block header %}
+<h1>{% block title %}Make a guess!{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+<p>What episode does the following sentence come from?</p>
+<p>"{{ session['sentence'] }}"</p>
+<form method="post">
+  <label for="user_guess">Your guess:</label>
+  <select name="user_guess" id="user_guess">
+    {% for ep_name in session['ep_names'] %}
+    <option value="{{ ep_name }}">{{ ep_name }}</option>
+    {% endfor %}
+  </select>
+  <br><br>
+  <input type="submit" value="Submit">
+</form>
+{% endblock %}
+
