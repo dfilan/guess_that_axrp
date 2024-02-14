@@ -5,7 +5,8 @@
 {% endblock %}
 
 {% block content %}
-<p>The sentence was: "{{ session['sentence'] }}"</p>
+<p>The sentence was:</p>
+{{ session['sentence']|safe }}
 <p>You guessed it came from {{ user_guess }}.</p>
 <p>It actually came from {{ session['episode_name'] }}.</p>
 <p>You've gotten {{ session["correct_guesses"] }} {% if session["correct_guesses"] == 1 %}guess{% else %}guesses{% endif %} correct, out of {{ session["total_guesses"] }} total.</p>

@@ -5,6 +5,7 @@ description = "Everyone's favourite AXRP guessing game"
 dependencies = [
     "flask",
     "requests",
+    "Markdown",
 ]
 
 [build-system]

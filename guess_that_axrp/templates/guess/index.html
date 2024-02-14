@@ -6,7 +6,8 @@
 
 {% block content %}
 <p>What episode does the following sentence come from?</p>
-<p>"{{ session['sentence'] }}"</p>
+<!-- <p>"{{ session['sentence'] }}"</p> -->
+{{ session['sentence']|safe }}
 <form method="post">
   <label for="user_guess">Your guess:</label>
   <select name="user_guess" id="user_guess">

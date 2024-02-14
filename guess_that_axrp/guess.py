@@ -1,6 +1,7 @@
 import random
 
 from flask import Blueprint, render_template, request, session
+import markdown
 
 from guess_that_axrp.db import get_db
 
@@ -28,7 +29,8 @@ def pick_random_sentence(text):
     # ok fuck quotations
     sep_period = nice_split(lines, '.')
     sep_bang = nice_split(sep_period, '?')
-    return random.choice(sep_bang)
+    random_markdown = "> " + random.choice(sep_bang)
+    return markdown.markdown(random_markdown)
 
 
 def nice_split(text_list: list[str], split_char: str) -> list[str]:
@@ -55,8 +57,10 @@ def index():
         user_guess = request.form['user_guess']
         guess_correct = 1 if user_guess == session['episode_name'] else 0
         # add error if somehow you're not yet playing?
-        session['total_guesses'] += 1
-        session['correct_guesses'] += guess_correct
+        if session['guess_ripe']:
+            session['total_guesses'] += 1
+            session['correct_guesses'] += guess_correct
+        session['guess_ripe'] = False
         return render_template('guess/result.html', user_guess=user_guess)
 
     else:
@@ -77,4 +81,5 @@ def index():
         ep_sentence = pick_random_sentence(contents['contents'])
         session['episode_name'] = random_ep_name
         session['sentence'] = ep_sentence
+        session['guess_ripe'] = True
         return render_template('guess/index.html')
