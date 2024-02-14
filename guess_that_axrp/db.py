@@ -1,21 +1,18 @@
 import os
 
 import click
-from flask import current_app, g
+from flask import current_app
 import psycopg
 import requests
 
 
 def get_db():
-    if 'con' not in g:
-        g.con = psycopg.connect(
-            current_app.config['DATABASE_URL'],
-            row_factory=psycopg.rows.dict_row,
-        )
-        # wait am I supposed to do this in a with block?
-        # maybe I just return a connection and save on a big function call?
+    con = psycopg.connect(
+        current_app.config['DATABASE_URL'],
+        row_factory=psycopg.rows.dict_row,
+    )
 
-    return g.con
+    return con
 
 
 def get_axrp_files():
