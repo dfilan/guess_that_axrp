@@ -1,4 +1,5 @@
 import random
+import uuid
 
 from flask import Blueprint, render_template, request, session
 import markdown
@@ -73,6 +74,7 @@ def index():
             names_and_ids = [(ep['title'], ep['id']) for ep in eps]
             names_and_ids.sort(key=lambda x: x[1])
             session['ep_names'] = [ep[0] for ep in names_and_ids]
+            session['uuid'] = str(uuid.uuid1())
         random_ep_name = random.choice(session['ep_names'])
         db = get_db()
         contents = db.execute(

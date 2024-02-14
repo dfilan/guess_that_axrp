@@ -2,11 +2,25 @@
 
 {% block header %}
 <h1>{% block title %}Leaderboard{% endblock %}</h1>
-{% if g.playing %}
-<a class="action" href="{{ url_for('guess.index') }}">Return to game</a>
-{% endif %}
 {% endblock %}
 
 {% block content %}
-<p>Leaderboard under construction.</p>
+<!-- So there's a leaderboard we have, and it's got users, successes, attempts, laplace_estimator, and submitted times -->
+<table>
+  <tr>
+    <th>Rank</th>
+    <th>Username</th>
+    <th>Fraction Correct</th>
+    <th>Skill Level</th>
+    <th>Time Submitted</th>
+  </tr>
+  {% for row in leaderboard %}
+  <tr>
+    <td>{{ row['rank'] }}</td>
+    <td>{{ row['user'] }}</td>
+    <td>{{ row['successes'] }}/{{ row['attempts'] }}</td>
+    <td>{{ row['laplace_estimator'] }}</td>
+    <td>{{ row['submitted'] }}</td>
+  </tr>
+  {% endfor %}
 {% endblock %}

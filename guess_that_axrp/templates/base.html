@@ -4,8 +4,12 @@
 <nav>
   <h1>Guess That AXRP!</h1>
   <ul>
-    <li><a href="{{ url_for('leaderboard.index') }}">Leaderboard</a></li> <!-- TODO update this once I've made the leaderboard -->
-    <li><a href="https://axrp.net">AXRP Home Page</a></li>
+    <li><a href="{{ url_for('welcome.index') }}">Home</a></li>
+    <li><a href="{{ url_for('leaderboard.index') }}">Leaderboard</a></li>
+    {% if session['playing'] %}
+    <li><a class="action" href="{{ url_for('guess.index') }}">Return to Game</a></li>
+    {% endif %}
+    <li><a href="https://axrp.net">AXRP Home</a></li>
   </ul>
 </nav>
 <section class="content">

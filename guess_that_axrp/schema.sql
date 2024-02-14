@@ -10,6 +10,7 @@ CREATE TABLE episodes (
 CREATE TABLE scores (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         user TEXT NOT NULL,
+        uuid TEXT NOT NULL,
         submitted TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         successes INTEGER NOT NULL,
         attempts INTEGER NOT NULL,
@@ -18,4 +19,4 @@ CREATE TABLE scores (
         -- TODO figure out how to make a constraint that the score estimator is right
 );
 
-CREATE INDEX score_estimate ON scores (laplace_estimator);
+-- CREATE INDEX score_estimate ON scores (laplace_estimator);
