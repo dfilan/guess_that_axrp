@@ -31,6 +31,7 @@ def get_axrp_files():
     raw_prefix = "https://raw.githubusercontent.com/axrp/axrp.github.io/master/_posts/"
     episode_texts = []
     for file_dict in files:
+        print(file_dict)
         file_name = file_dict['name']
         # file name has got to contain "episode-[number]", the number can't be 7.5 (aka can't
         # be followed by an underscore), and it's got to end in ".markdown"
