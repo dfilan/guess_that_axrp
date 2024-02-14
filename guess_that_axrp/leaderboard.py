@@ -12,11 +12,12 @@ def index():
     # sort by laplace_estimator
     # pick out top 20
     db = get_db()
+    my_uuid = "None" if 'uuid' not in session else session['uuid']
     leaderboard = db.execute(
         'SELECT * FROM (SELECT RANK() OVER(ORDER BY laplace_estimator DESC) as rank, user, '
         'uuid, successes, attempts, laplace_estimator, submitted FROM scores) '
         'WHERE rank <= 3 OR uuid = ?',
-        (session['uuid'],)
+        (my_uuid,)
     ).fetchall()
     # leaderboard = everything[:20]
     # # oh also get the user's score if they're not in that list already
