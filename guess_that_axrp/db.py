@@ -1,31 +1,28 @@
-import sqlite3
+import os
 
 import click
 from flask import current_app, g
+import psycopg
 import requests
 
 
 def get_db():
-    if 'db' not in g:
-        g.db = sqlite3.connect(
-            current_app.config['DATABASE'],
-            detect_types=sqlite3.PARSE_DECLTYPES
+    if 'conn' not in g:
+        g.conn = psycopg.connect(
+            current_app.config['DATABASE_URL'],
+            row_factory=psycopg.rows.dict_row,
         )
-        g.db.row_factory = sqlite3.Row
+        # wait am I supposed to do this in a with block?
+        # maybe I just return a connection and save on a big function call?
 
-    return g.db
-
-
-def close_db(e=None):
-    db = g.pop('db', None)
-
-    if db is not None:
-        db.close()
+    return g.conn
 
 
 def get_axrp_files():
     # get the contents of the _posts directory of the axrp.github.io repo
-    response = requests.get("https://api.github.com/repos/axrp/axrp.github.io/contents/_posts")
+    repo_posts_url = "https://api.github.com/repos/axrp/axrp.github.io/contents/_posts"
+    auth_header = {"Authorization": f"token {current_app.config['GITHUB_TOKEN']}"}
+    response = requests.get(repo_posts_url, headers=auth_header)
     files = response.json()
     # download each file that's an episode
     raw_prefix = "https://raw.githubusercontent.com/axrp/axrp.github.io/master/_posts/"
@@ -36,7 +33,7 @@ def get_axrp_files():
         # be followed by an underscore), and it's got to end in ".markdown"
         if "episode-" in file_name and not "7_5" in file_name and file_name.endswith(".markdown"):
             file_url = raw_prefix + file_name
-            response = requests.get(file_url)
+            response = requests.get(file_url, headers=auth_header)
             episode_texts.append(response.text)
 
     return episode_texts           
@@ -44,25 +41,23 @@ def get_axrp_files():
         
 def init_db():
     """Initialize the database and populate it with the AXRP episodes."""
-    db = get_db()
+    with get_db() as conn:
+        with current_app.open_resource('schema.sql') as f:
+            conn.execute(f.read().decode('utf8'))
 
-    with current_app.open_resource('schema.sql') as f:
-        db.executescript(f.read().decode('utf8'))
-
-    # call a thing to get files from the AXRP website
-    # ok and the title is the first bit of the text after "title: " in quotes
-    ep_texts = get_axrp_files()
-    for ep_text in ep_texts:
-        title = ep_text.split("title:")[1].lstrip().split("\"")[1]
-        try:
-            db.execute(
-                'INSERT INTO episodes (title, contents) VALUES (?, ?)',
-                (title, ep_text)
-            )
-            db.commit()
-        except sqlite3.IntegrityError:
-            error = f"Episode {title} is already in the database."
-            flash(error)
+        # call a thing to get files from the AXRP website
+        # the title is the first bit of the text after "title: " in quotes
+        ep_texts = get_axrp_files()
+        for ep_text in ep_texts:
+            title = ep_text.split("title:")[1].lstrip().split("\"")[1]
+            try:
+                cur = conn.execute(
+                    'INSERT INTO episodes (title, contents) VALUES (%s, %s)',
+                    (title, ep_text)
+                )
+            except psycopg.IntegrityError:
+                error = f"Episode {title} is already in the database."
+                flash(error)
 
 
 @click.command('init-db')
@@ -73,10 +68,4 @@ def init_db_command():
 
 
 def init_app(app):
-    app.teardown_appcontext(close_db)
     app.cli.add_command(init_db_command)
-    # init_db()
-    # so I can't initialize the db right away because I don't have the app context yet
-    # so do I have to do that manually, once the app is created?
-    # wait why am I even doing this whole application factory thing?
-    # whatever I'm sure it's fine

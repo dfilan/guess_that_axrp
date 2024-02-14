@@ -1,5 +1,4 @@
 import random
-import uuid
 
 from flask import Blueprint, render_template, request, session
 import markdown
@@ -71,10 +70,10 @@ def index():
         if not 'playing' in session or not session['playing']:
             init_session()
         random_ep_name = random.choice(session['ep_names'])
-        db = get_db()
-        contents = db.execute(
-            'SELECT contents FROM episodes WHERE title = ?', (random_ep_name,)
-        ).fetchone()
+        with get_db() as conn:
+            contents = con.execute(
+                'SELECT contents FROM episodes WHERE title = ?', (random_ep_name,)
+            ).fetchone()
         ep_sentence = pick_random_sentence(contents['contents'])
         session['episode_name'] = random_ep_name
         session['sentence'] = ep_sentence

@@ -6,6 +6,7 @@ dependencies = [
     "flask",
     "requests",
     "Markdown",
+    "psycopg[binary]",
 ]
 
 [build-system]

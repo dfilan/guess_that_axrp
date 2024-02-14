@@ -10,30 +10,21 @@ bp = Blueprint('leaderboard', __name__, url_prefix='/leaderboard')
 def index():
     # get stuff from the db
     # sort by laplace_estimator
-    # pick out top 20
+    # pick out top 20, and also the user's entry.
     db = get_db()
     my_uuid = "None" if 'uuid' not in session else session['uuid']
-    leaderboard = db.execute(
-        'SELECT * FROM (SELECT RANK() OVER(ORDER BY laplace_estimator DESC) as rank, user, '
-        'uuid, successes, attempts, laplace_estimator, submitted FROM scores) '
-        'WHERE rank <= 20 OR uuid = ?',
-        (my_uuid,)
-    ).fetchall()
-    # leaderboard = everything[:20]
-    # # oh also get the user's score if they're not in that list already
-    # if 'uuid' in session and session['uuid'] not in [row['uuid'] for row in leaderboard]:
-    #     user_score = db.execute(
-    #         'SELECT RANK() OVER(ORDER BY laplace_estimator DESC) as rank, user, successes,'
-    #         'attempts, laplace_estimator, submitted FROM scores WHERE uuid = ?',
-    #         (session['uuid'],)
-    #     ).fetchone()
-    #     if user_score:
-    #         leaderboard.append(dict(user_score))
+    with get_db() as conn:
+        leaderboard = conn.execute(
+            'SELECT * FROM (SELECT RANK() OVER(ORDER BY laplace_estimator DESC) as rank, '
+            'username, uuid, successes, attempts, laplace_estimator, submitted FROM scores) '
+            'WHERE rank <= 20 OR uuid = %s',
+            (my_uuid,)
+        ).fetchall()
     # send it to the template
     filtered_leaderboard = [
         {
             'rank': row['rank'],
-            'user': row['user'],
+            'username': row['username'],
             'successes': row['successes'],
             'attempts': row['attempts'],
             'laplace_estimator': round(row['laplace_estimator'], 3),
@@ -54,12 +45,12 @@ def submit():
         attempts = session['total_guesses']
         laplace = (successors + 1) / (attempts + len(session['ep_names']))
         db = get_db()
-        db.execute(
-            'INSERT INTO scores (user, uuid, successes, attempts, laplace_estimator)'
-            ' VALUES (?, ?, ?, ?, ?)',
-            (username, session['uuid'], successors, attempts, laplace)
-        )
-        db.commit()
+        with get_db() as conn:
+            cur = conn.execute(
+                'INSERT INTO scores (username, uuid, successes, attempts, laplace_estimator)'
+                ' VALUES (%s, %s, %s, %s, %s)',
+                (username, session['uuid'], successors, attempts, laplace)
+            )
         return redirect(url_for('leaderboard.index'))
     else:
         # if we're getting, render the template, which should have a field for name,
