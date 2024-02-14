@@ -1,6 +1,23 @@
 <!doctype html>
 <title>{% block title %}{% endblock %} - Guess That AXRP!</title>
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<!-- <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"> -->
+<style>
+  /* stolen from bestmotherfucking.website */
+  body{
+      margin:1em auto;
+      max-width:40em;
+      padding:0 .62em 3.24em;
+      font:1.2em/1.62 sans-serif
+  }
+  h1,h2,h3 {
+      line-height:1.2
+  }
+  @media print{
+      body{
+	  max-width:none
+      }
+  }
+</style>
 <nav>
   <h1>Guess That AXRP!</h1>
   <ul>
