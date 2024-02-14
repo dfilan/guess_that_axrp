@@ -5,6 +5,8 @@ A guessing game: the game randomly picks an AXRP episode, randomly picks a sente
 They can do this multiple times, and optimally submit to a leaderboard.
 
 Things that still need to be done:
+  - Deal with github API not giving me stuff
+    - Add github deets to the instance so that I get less rate-limited?
   - Auto-update the DB
   - Show URL of episode
   - That type of field where the user types a search term in a box to go down a list
@@ -13,3 +15,8 @@ Things that still need to be done:
   - Get right answer not stored in user cookies
   - Reset session when you submit your score (so you can't submit multiple times)
     - or otherwise do something so you can't submit multiple times
+  - Create section saying what stuff I used / stole from
+    - GitHub repo
+    - Flask tutorial
+    - Render
+    - [bestmotherfucking.website](https://bestmotherfucking.website/)
