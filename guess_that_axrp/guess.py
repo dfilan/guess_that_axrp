@@ -70,9 +70,9 @@ def index():
         if not 'playing' in session or not session['playing']:
             init_session()
         random_ep_name = random.choice(session['ep_names'])
-        with get_db() as conn:
+        with get_db() as con:
             contents = con.execute(
-                'SELECT contents FROM episodes WHERE title = ?', (random_ep_name,)
+                'SELECT contents FROM episodes WHERE title = %s', (random_ep_name,)
             ).fetchone()
         ep_sentence = pick_random_sentence(contents['contents'])
         session['episode_name'] = random_ep_name

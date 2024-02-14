@@ -13,11 +13,11 @@ def index():
     # pick out top 20, and also the user's entry.
     db = get_db()
     my_uuid = "None" if 'uuid' not in session else session['uuid']
-    with get_db() as conn:
-        leaderboard = conn.execute(
+    with get_db() as con:
+        leaderboard = con.execute(
             'SELECT * FROM (SELECT RANK() OVER(ORDER BY laplace_estimator DESC) as rank, '
             'username, uuid, successes, attempts, laplace_estimator, submitted FROM scores) '
-            'WHERE rank <= 20 OR uuid = %s',
+            'AS ranked WHERE rank <= 20 OR uuid = %s',
             (my_uuid,)
         ).fetchall()
     # send it to the template
@@ -45,8 +45,8 @@ def submit():
         attempts = session['total_guesses']
         laplace = (successors + 1) / (attempts + len(session['ep_names']))
         db = get_db()
-        with get_db() as conn:
-            cur = conn.execute(
+        with get_db() as con:
+            cur = con.execute(
                 'INSERT INTO scores (username, uuid, successes, attempts, laplace_estimator)'
                 ' VALUES (%s, %s, %s, %s, %s)',
                 (username, session['uuid'], successors, attempts, laplace)

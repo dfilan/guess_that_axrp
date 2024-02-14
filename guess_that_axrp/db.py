@@ -7,15 +7,15 @@ import requests
 
 
 def get_db():
-    if 'conn' not in g:
-        g.conn = psycopg.connect(
+    if 'con' not in g:
+        g.con = psycopg.connect(
             current_app.config['DATABASE_URL'],
             row_factory=psycopg.rows.dict_row,
         )
         # wait am I supposed to do this in a with block?
         # maybe I just return a connection and save on a big function call?
 
-    return g.conn
+    return g.con
 
 
 def get_axrp_files():
@@ -41,9 +41,9 @@ def get_axrp_files():
         
 def init_db():
     """Initialize the database and populate it with the AXRP episodes."""
-    with get_db() as conn:
+    with get_db() as con:
         with current_app.open_resource('schema.sql') as f:
-            conn.execute(f.read().decode('utf8'))
+            con.execute(f.read().decode('utf8'))
 
         # call a thing to get files from the AXRP website
         # the title is the first bit of the text after "title: " in quotes
@@ -51,7 +51,7 @@ def init_db():
         for ep_text in ep_texts:
             title = ep_text.split("title:")[1].lstrip().split("\"")[1]
             try:
-                cur = conn.execute(
+                cur = con.execute(
                     'INSERT INTO episodes (title, contents) VALUES (%s, %s)',
                     (title, ep_text)
                 )
