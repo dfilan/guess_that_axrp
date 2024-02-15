@@ -36,3 +36,8 @@
   {% endfor %}
   {% block content %}{% endblock %}
 </section>
+{% if session['playing'] %}
+<form action={{ url_for('manage_session.end_session') }} method="get">
+  <input type="submit" value="Clear game info" onclick="return confirm('Are you sure? This will delete your current game progress')" />
+</form>
+{% endif %}

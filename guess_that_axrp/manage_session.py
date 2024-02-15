@@ -2,9 +2,11 @@ import functools
 import random
 import uuid
 
-from flask import flash, redirect, session, url_for
+from flask import Blueprint, flash, redirect, session, url_for
 
 from guess_that_axrp.db import get_db
+
+bp = Blueprint('manage_session', __name__, url_prefix='/manage_session')
 
 def init_session():
     session.clear()
@@ -18,9 +20,12 @@ def init_session():
     session['total_guesses'] = 0
     session['playing'] = True
 
+
+@bp.route('/')
 def end_session():
     session.clear()
     session['playing'] = False
+    return redirect(url_for('welcome.index'))
 
 
 def must_be_playing(view):
