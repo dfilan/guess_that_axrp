@@ -11,7 +11,6 @@ Things that still need to be done (bolded things will teach me stuff):
   - Show URL of episode
   - **That type of field where the user types a search term in a box to go down a list**
   - Test I've correctly started the episode db
-  - Button to reset session
   - Get right answer not stored in user cookies
     - Could store it in a database with the UUID
   - Reset session when you submit your score (so you can't submit multiple times)
