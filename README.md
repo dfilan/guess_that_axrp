@@ -21,5 +21,4 @@ Things that still need to be done (bolded things will teach me stuff):
     - Flask tutorial
     - Render
     - [bestmotherfucking.website](https://bestmotherfucking.website/)
-  - **Deal with people visiting leaderboard.submit or guess.result without playing**
   - Deal with key errors without breaking the user experience.

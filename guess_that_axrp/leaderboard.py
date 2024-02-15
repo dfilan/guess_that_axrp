@@ -5,6 +5,7 @@ from flask import (
 )
 
 from guess_that_axrp.db import get_db
+from guess_that_axrp.manage_session import must_be_playing
 
 bp = Blueprint('leaderboard', __name__, url_prefix='/leaderboard')
 
@@ -44,6 +45,7 @@ def index():
 
 
 @bp.route('/submit', methods=('GET', 'POST'))
+@must_be_playing
 def submit():
     if request.method == 'POST':
         # if we're posting, get data from the session + the user name,
