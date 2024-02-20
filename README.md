@@ -7,6 +7,7 @@ They can do this multiple times, and optimally submit to a leaderboard.
 Things that still need to be done (bolded things will teach me stuff):
   - Show URL of episode
   - **That type of field where the user types a search term in a box to go down a list**
+    - Tried using [this](https://www.webdevsplanet.com/post/html-dropdown-select-with-searchbox), seems too annoying tbh
   - Test I've correctly started the episode db
   - Get right answer not stored in user cookies
     - Could store it in a database with the UUID
