@@ -35,6 +35,12 @@ def get_axrp_files():
 
     return episode_texts           
 
+
+def get_title(ep_text):
+    """Get the title of an episode from its text."""
+    title = ep_text.split("title:")[1].lstrip().split("\"")[1]
+    return title
+
         
 def init_db():
     """Initialize the database and populate it with the AXRP episodes."""
@@ -46,7 +52,7 @@ def init_db():
         # the title is the first bit of the text after "title: " in quotes
         ep_texts = get_axrp_files()
         for ep_text in ep_texts:
-            title = ep_text.split("title:")[1].lstrip().split("\"")[1]
+            title = get_title(ep_text)
             try:
                 cur = con.execute(
                     'INSERT INTO episodes (title, contents) VALUES (%s, %s)',
@@ -57,6 +63,34 @@ def init_db():
                 flash(error)
 
 
+def update_db():
+    """Add new episodes of AXRP to the database, and update the contents of existing episodes."""
+    with get_db() as con:
+        # get the titles of the episodes in the database
+        titles = con.execute('SELECT title FROM episodes').fetchall()
+        titles = [title['title'] for title in titles]
+        # get the new database of episodes from the AXRP github
+        ep_texts = get_axrp_files()
+        for ep_text in ep_texts:
+            title = get_title(ep_text)
+            if title in titles:
+                # update the contents of the existing episodes
+                con.execute(
+                    'UPDATE episodes SET contents = %s WHERE title = %s',
+                    (ep_text, title)
+                )
+            else:
+                # add the new episodes to the database
+                try:
+                    con.execute(
+                        'INSERT INTO episodes (title, contents) VALUES (%s, %s)',
+                        (title, ep_text)
+                    )
+                except psycopg.IntegrityError:
+                    error = f"Episode {title} is already in the database."
+                    flash(error)
+
+
 @click.command('init-db')
 def init_db_command():
     """Clear the existing data and create new tables"""
@@ -64,5 +98,13 @@ def init_db_command():
     click.echo('Initialized the database.')
 
 
+@click.command('update-db')
+def update_db_command():
+    """Update the database with new episodes of AXRP"""
+    update_db()
+    click.echo('Updated the database.')
+
+
 def init_app(app):
     app.cli.add_command(init_db_command)
+    app.cli.add_command(update_db_command)
