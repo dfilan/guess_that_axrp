@@ -20,6 +20,8 @@ def get_axrp_files():
     repo_posts_url = "https://api.github.com/repos/axrp/axrp.github.io/contents/_posts"
     auth_header = {"Authorization": f"token {current_app.config['GITHUB_TOKEN']}"}
     response = requests.get(repo_posts_url, headers=auth_header)
+    if response.status_code != 200:
+        raise Exception(f"Failed to get the contents of the _posts directory: {response.text}")
     files = response.json()
     # download each file that's an episode
     raw_prefix = "https://raw.githubusercontent.com/axrp/axrp.github.io/master/_posts/"
@@ -31,6 +33,8 @@ def get_axrp_files():
         if "episode-" in file_name and not "7_5" in file_name and file_name.endswith(".markdown"):
             file_url = raw_prefix + file_name
             response = requests.get(file_url, headers=auth_header)
+            if response.status_code != 200:
+                raise Exception(f"Failed to get the contents of the file {file_name}: {response.text}")
             episode_texts.append(response.text)
 
     return episode_texts           
@@ -67,13 +71,13 @@ def update_db():
     """Add new episodes of AXRP to the database, and update the contents of existing episodes."""
     with get_db() as con:
         # get the titles of the episodes in the database
-        titles = con.execute('SELECT title FROM episodes').fetchall()
-        titles = [title['title'] for title in titles]
+        existing_titles = con.execute('SELECT title FROM episodes').fetchall()
+        existing_titles = [title['title'] for title in existing_titles]
         # get the new database of episodes from the AXRP github
         ep_texts = get_axrp_files()
         for ep_text in ep_texts:
             title = get_title(ep_text)
-            if title in titles:
+            if title in existing_titles:
                 # update the contents of the existing episodes
                 con.execute(
                     'UPDATE episodes SET contents = %s WHERE title = %s',
@@ -94,15 +98,21 @@ def update_db():
 @click.command('init-db')
 def init_db_command():
     """Clear the existing data and create new tables"""
-    init_db()
-    click.echo('Initialized the database.')
+    try:
+        init_db()
+        click.echo('Initialized the database.')
+    except Exception as e:
+        click.echo(f"Failed to initialize the database: {e}")
 
 
 @click.command('update-db')
 def update_db_command():
     """Update the database with new episodes of AXRP"""
-    update_db()
-    click.echo('Updated the database.')
+    try :
+        update_db()
+        click.echo('Updated the database.')
+    except Exception as e:
+        click.echo(f"Failed to update the database: {e}")
 
 
 def init_app(app):
